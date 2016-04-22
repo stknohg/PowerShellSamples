@@ -1,4 +1,9 @@
 ﻿#
+# パイプラインの実行例
+#
+@(1,2,@(3,4),5) | % { Write-Host "$($_.GetType())型の値 $($_) がパイプされました..."} 
+
+#
 # パイプラインのテスト用コマンド1
 #
 function Command1
@@ -53,4 +58,4 @@ function Command2
 #
 # パイプラインのテスト
 #
-@(1..10) | Command1 | Command2
+@(1..5) | Command1 | Command2
