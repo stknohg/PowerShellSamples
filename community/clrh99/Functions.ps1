@@ -7,7 +7,7 @@ function WriteHello([string]$Message)
 }
 
 #
-# スクリプトコマンドレットのサンプル
+# 高度な関数のサンプル
 #
 function Write-Hello
 {
