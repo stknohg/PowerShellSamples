@@ -1,0 +1,63 @@
+#
+# Lambda関数に必要なリソースを作るためのCFnテンプレート
+# このテンプレートは以下のリソースを作成します
+# * IAMポリシー＋ロール : 関数を実行するためのポリシー
+#    * ec2:DescribeInstances, ec2:DescribeInstanceStatus, ec2:StopInstances : EC2インスタンスをシャットダウンするための権限
+#    * logs:CreateLogGroup, logs:CreateLogStream, logs:PutLogEvents : 関数の実行ログをCLoudWatch Logsに記録するための権限
+# * CloudWatchイベントルール : 毎日 00:00(JST)に発火するルールを設定しています
+#
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  BaseName:
+    Description: "Input base name."
+    Type: String
+    Default: "interact2019-lambda-demo"
+Resources:
+  # IAM Policy / Role
+  LambdaRole1:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Sub: "${BaseName}-role"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName:
+          Fn::Sub: "${BaseName}-policy"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:DescribeInstances
+            - ec2:DescribeInstanceStatus
+            - ec2:StopInstances
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            Resource:
+              Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+          - Effect: Allow
+            Action:
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource:
+              Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${BaseName}:*"
+  # CloudWatch event
+  CWEventRule1:
+    Type: AWS::Events::Rule
+    Properties:
+      Name:
+        Fn::Sub: "${BaseName}-event"
+      Description: "Run at 00:00(JST) every day."
+      ScheduleExpression: "cron(0 15 * * ? *)"
+      State: "ENABLED"
