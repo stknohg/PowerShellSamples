@@ -4,6 +4,10 @@
 
 ## 勉強会での登壇資料
 
+### CLR/H #109 ～夏だ一番初心祭り～
+
+* https://clrh.connpass.com/event/137732/
+
 ### Interact 2019(仮称)
 
 * https://interact.connpass.com/event/91059/
